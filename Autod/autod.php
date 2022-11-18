@@ -2,7 +2,7 @@
 require_once ('connect.php');
 global $yhendus;
 //andmete lisamine tabelisse
-if(isset($_REQUEST['lisamisvorm']) && !empty($_REQUEST["omanik"])) {
+if(isset($_REQUEST['lisaAuto']) && !empty($_REQUEST["omanik"])) {
     $algus = $yhendus->prepare(
         "INSERT INTO auto(omanik, mark, vabastamise_aeg) VALUES (?,?,?)"
     );
@@ -34,9 +34,9 @@ if(isset($_REQUEST['kustuta'])){
     <ul>
         <?php
         //näitab looamde loetelu tabelist loomad
-        $algus=$yhendus->prepare("SELECT autoId, mark, omanik,vabastamise_aeg FROM auto");
-        $algus->bind_result($autoId,$mark,$omanik, $vabastamise_aeg);
-        $algus->execute();
+        $algus=$yhendus->prepare("SELECT autoId, omanik FROM auto WHERE autoId=?");
+        //$algus->bind_result($autoId, $omanik);
+        //$algus->execute();
 
         while($algus->fetch()){
 
@@ -52,10 +52,10 @@ if(isset($_REQUEST['kustuta'])){
 
     <?php
     if(isset($_REQUEST["autoId"])){
-        $algus=$yhendus->prepare("SELECT mark ,vabastamise_aeg , omanik FROM auto WHERE autoId=?");
+        $algus=$yhendus->prepare("SELECT mark, vabastamise_aeg, omanik FROM auto WHERE autoId=?");
         $algus->bind_param('i', $_REQUEST["autoId"]);
         //? küsimärki asemel aadressiribal tuleb id
-        $algus->bind_result($omanik, $mark,$vabastamise_aeg);
+        $algus->bind_result($mark, $vabastamise_aeg, $omanik);
         $algus->execute();
         if($algus->fetch()){
             echo "<div><strong>".htmlspecialchars($omanik)."</strong>, Auto mark ";
@@ -71,7 +71,7 @@ if(isset($_REQUEST['kustuta'])){
         ?>
         <h2>Uue auto lisamine</h2>
         <form name="uusloom" method="post" action="?">
-            <input type="hidden" name="lisamisvorm" value="jah">
+            <input type="hidden" name="lisaAuto" value="jah">
             <input type="text" name="omanik" placeholder="Omaniku nimi">
             <br>
             <input type="text" name="mark" max="30" placeholder="Auto mark">
